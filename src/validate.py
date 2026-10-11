@@ -24,20 +24,18 @@ def validate_data(df: pd.DataFrame) -> pd.DataFrame:
     if missing_service > 0:
         raise ValidationError(f"Data contains {missing_service} rows with a blank SERVICE_NO.")
     
-    # 2. Check for NaN in MY_REVENUE
-    # If our calculation broke, we want to know now, not later.
-    missing_revenue = df['MY_REVENUE'].isnull().sum()
+    # 2. Check for NaN in ACTUAL_REVENUE_SHARE
+    missing_revenue = df['ACTUAL_REVENUE_SHARE'].isnull().sum()
     if missing_revenue > 0:
-        raise ValidationError(f"Calculation Error: {missing_revenue} rows have NaN for MY_REVENUE.")
+        raise ValidationError(f"Extraction Error: {missing_revenue} rows have NaN for ACTUAL_REVENUE_SHARE.")
     
     # 3. Check for massive negative revenue (Logic Check)
-    # If MY_REVENUE is extremely negative, something might be wrong with OTF
-    negative_revenue = df[df['MY_REVENUE'] < -5000]
+    negative_revenue = df[df['ACTUAL_REVENUE_SHARE'] < -5000]
     if not negative_revenue.empty:
-        logger.warning(f"Warning: {len(negative_revenue)} rows have MY_REVENUE below -5000. Check OTF deductions.")
+        logger.warning(f"Warning: {len(negative_revenue)} rows have ACTUAL_REVENUE_SHARE below -5000.")
 
     print("[SUCCESS] Validation Passed: SERVICE_NO is populated for all rows.")
-    print("[SUCCESS] Validation Passed: MY_REVENUE calculated without NaN errors.")
+    print("[SUCCESS] Validation Passed: ACTUAL_REVENUE_SHARE populated without NaN errors.")
     
     return df
 

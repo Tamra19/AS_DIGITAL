@@ -25,9 +25,9 @@ def load_bill_history(df: pd.DataFrame, output_dir: Path):
         old_history_df = pd.read_csv(history_file)
         combined_df = pd.concat([old_history_df, df], ignore_index=True)
         
-    # The Idempotency Key: A customer can only have ONE bill per month.
-    # So SERVICE_NO + COMM_MONTH is our unique identifier.
-    combined_df = combined_df.drop_duplicates(subset=['SERVICE_NO', 'COMM_MONTH'], keep='last')
+    # The Idempotency Key: We now use our deterministic TRANSACTION_ID.
+    # This prevents duplicate file uploads but preserves legitimate multiple transactions in the same month.
+    combined_df = combined_df.drop_duplicates(subset=['TRANSACTION_ID'], keep='last')
     
     # Overwrite the history file with the newly deduplicated dataset
     combined_df.to_csv(history_file, index=False)

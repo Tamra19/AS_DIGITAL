@@ -8,7 +8,6 @@ from clean import clean_data
 from transform import transform_data
 from validate import validate_data
 from load import load_bill_history, load_current_connections
-from analytics import generate_revenue_report, generate_anomaly_report
 
 # Configure logging for the central orchestrator
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
@@ -72,12 +71,11 @@ def run_etl_pipeline():
             logger.error(f"Failed to process {file_path.name}. Error: {e}")
             # If it fails, it stays in the input folder so you can fix it and try again
     
-    # Finally, run the analytics report on the newly updated database
-    logger.info("--- Generating Analytics Reports ---")
+    logger.info("--- Generating Phase 5 Analytics Reports ---")
     history_path = output_dir / "bill_history.csv"
     if history_path.exists():
-        generate_revenue_report(history_path)
-        generate_anomaly_report(history_path)
+        from analytics import run_all_reports
+        run_all_reports(history_path)
         
     return True
 
